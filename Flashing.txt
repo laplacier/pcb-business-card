@@ -1,0 +1,41 @@
+In order for the business card to be recognized as a USB device it needs to be flashed with the micronucleus bootloader.
+
+Download the newest release from https://github.com/micronucleus/micronucleus/releases
+Unzip the contents to any directory on your computer
+In the windows_driver_installer folder, run Zadig
+Goto Device -> Load Preset Device… and choose micronucleus.cfg
+
+Click the Install Driver button. You should now have the micronucleus driver installed.
+Go back to the main directory and navigate to firmware\releases
+Copy t85_default.hex into the directory avrdude is located in. This should be in the Arduino folder in /Arduino/hardware/tools/avr/bin
+Create a new text document in a convenient location and open it
+Copy the following text into the text document. You need to substitute <COM Port> with the serial port that is communicating with the Arduino ISP and <Arduino directory> with the location of the Arduino folder on your computer.
+
+cd <Arduino directory>/Arduino/hardware/tools/avr/bin
+
+avrdude -C ../etc/avrdude.conf -c arduino -p t85 -P <COM Port> -b 19200 -U flash:w:t85_default.hex -U lfuse:w:0xe1:m -U hfuse:w:0xdd:m -U efuse:w:0xfe:m
+
+PAUSE
+
+For example: mine is the following…
+
+cd C:/Program Files (x86)/Arduino/hardware/tools/avr/bin
+
+avrdude -C ../etc/avrdude.conf -c arduino -p t85 -P COM6 -b 19200 -U flash:w:t85_default.hex -U lfuse:w:0xe1:m -U hfuse:w:0xdd:m -U efuse:w:0xfe:m
+
+PAUSE
+
+
+Save this text document as a .bat file to create a batch file. With this, the one time setup is done. The only modification you may have to make in the future is opening the text document again to change the COM port as that seems to float over time.
+
+Plug the Tag Connect into the small port on the bottom right of the business card, applying enough pressure to push the pogo pins down a little, and run the newly created batch file. You should see the led light up as the ATTiny85 is flashed with the bootloader.
+
+A few quirks and errors that can occur:
+
+Can’t set com-state: Either you specified the wrong COM port in the text document or the Arduino ISP needs to be replugged in. This seems to happen often while programming the boards.
+
+
+Invalid device signature: Either the Tag Connect is not firmly pressed onto the board, there are soldering issues from putting the board together, or the ATTiny85 is faulty. Overriding will not help. Not the error you want to see. Bust out that multimeter and start looking for continuity errors...
+
+
+If you get this message after flashing you should be good to go. The business card will now be recognized over USB.
